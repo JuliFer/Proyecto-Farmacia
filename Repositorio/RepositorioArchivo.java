@@ -5,8 +5,6 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
-import Repositorio.IRepositorio;
-
 //Clase genérica para persistencia en archivo
 //Usa serialización para guardar y leer listas de objetos
 public class RepositorioArchivo<T> implements IRepositorio<T> {
