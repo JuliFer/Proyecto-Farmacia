@@ -1,19 +1,19 @@
-package farmacia.ui;
+package ui;
 
 import java.util.List;
 import java.util.Scanner;
 
-import farmacia.dominio.Cliente;
-import farmacia.dominio.Farmacia;
-import farmacia.dominio.Farmaceutico;
-import farmacia.dominio.Medicamento;
-import farmacia.dominio.Generico;
-import farmacia.dominio.DeMarca;
-import farmacia.dominio.Controlado;
-import farmacia.dominio.EstadoMedicamento;
-import farmacia.excepcion.MedicamentoNoDisponibleException;
-import farmacia.repositorio.IRepositorio;
-import farmacia.repositorio.RepositorioArchivo;
+import dominio.Cliente;
+import dominio.Farmacia;
+import dominio.Farmaceutico;
+import dominio.Medicamento;
+import dominio.Generico;
+import dominio.DeMarca;
+import dominio.Controlado;
+import dominio.EstadoMedicamento;
+import excepcion.MedicamentoNoDisponibleException;
+import repositorio.IRepositorio;
+import repositorio.RepositorioArchivo;
 
 public class Menu {
     private Scanner scanner;

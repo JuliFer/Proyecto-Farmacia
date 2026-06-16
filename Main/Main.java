@@ -28,7 +28,5 @@ public class Main {
         menu.iniciar();
     }
 }
-ava.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
 
+git checkout main;

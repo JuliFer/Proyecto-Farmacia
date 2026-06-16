@@ -1,4 +1,4 @@
-ppackage farmacia.repositorio;
+package farmacia.repositorio;
 
 import java.io.*;
 import java.util.ArrayList;
