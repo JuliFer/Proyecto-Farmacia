@@ -31,6 +31,15 @@ public class RepositorioArchivo<T> implements IRepositorio<T> {
         }
     }
 
+    @Override
+    public void guardarTodos(List<T> lista) {
+        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(archivo))) {
+            oos.writeObject(lista);
+        } catch (IOException e) {
+            System.out.println("Error al guardar la lista completa: " + e.getMessage());
+        }
+    }
+
     //Metodo Consultar
     @Override
     public List<T> consultar() {

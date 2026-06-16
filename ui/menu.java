@@ -43,6 +43,8 @@ public class menu {
             System.out.println("5. Mostrar disponibles");
             System.out.println("6. Alerta stock bajo");
             System.out.println("7. Total gastado por cliente");
+            System.out.println("8. Eliminar medicamento");
+            System.out.println("9. Eliminar cliente");
             System.out.println("0. Salir");
             System.out.print("Seleccione una opción: ");
 
@@ -77,6 +79,12 @@ public class menu {
                 case 7:
                     mostrarTotalGastado();
                     break;
+                case 8:
+                    eliminarMedicamento();
+                    break;
+                case 9:
+                    eliminarCliente();
+                    break;
                 case 0:
                     System.out.println("Saliendo del sistema...");
                     break;
@@ -87,15 +95,15 @@ public class menu {
 
         } while (opcion != 0);
 
-        // Guardar datos al salir (guardar elemento por elemento)
-        for (Medicamento med : farmacia.getMedicamentos()) {
-            repositorioMedicamentos.guardar(med);
-        }
+        // Guardar datos al salir sobrescribiendo los archivos con el estado actual
+        repositorioMedicamentos.guardarTodos(farmacia.getMedicamentos());
+        List<Cliente> clientes = new java.util.ArrayList<>();
         for (Persona p : farmacia.getPersonas().values()) {
             if (p instanceof Cliente) {
-                repositorioClientes.guardar((Cliente) p);
+                clientes.add((Cliente) p);
             }
         }
+        repositorioClientes.guardarTodos(clientes);
         scanner.close();
     }
 
@@ -119,11 +127,9 @@ public class menu {
         Medicamento m = null;
         switch (tipo) {
             case 1: {
-                System.out.print("Principio activo: ");
-                String principio = scanner.nextLine();
                 System.out.print("Laboratorio: ");
                 String laboratorio = scanner.nextLine();
-                m = new Generico(nombre, precio, stock, receta, EEstadoMedicamento.DISPONIBLE, principio, laboratorio);
+                m = new Generico(nombre, precio, stock, receta, EEstadoMedicamento.DISPONIBLE, laboratorio);
                 break;
             }
             case 2: {
@@ -229,6 +235,27 @@ public class menu {
             System.out.println("Total gastado: $" + c.getTotalGastado());
         } else {
             System.out.println("Cliente no encontrado.");
+        }
+    }
+
+    private void eliminarMedicamento() {
+        System.out.print("Nombre del medicamento a eliminar: ");
+        String nombre = scanner.nextLine();
+        if (farmacia.eliminarMedicamento(nombre)) {
+            System.out.println("Se eliminó el medicamento correctamente.");
+        } else {
+            System.out.println("No se pudo eliminar el medicamento.");
+        }
+    }
+
+    private void eliminarCliente() {
+        System.out.print("DNI del cliente a eliminar: ");
+        int dni = scanner.nextInt();
+        scanner.nextLine();
+        if (farmacia.eliminarCliente(dni)) {
+            System.out.println("Se eliminó el cliente correctamente.");
+        } else {
+            System.out.println("No se pudo eliminar el cliente.");
         }
     }
 }

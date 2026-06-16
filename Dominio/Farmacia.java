@@ -78,6 +78,35 @@ public class Farmacia {
     }
 
     /**
+     * Elimina un medicamento por nombre si existe.
+     */
+    public boolean eliminarMedicamento(String nombre) {
+        Optional<Medicamento> opt = buscarMedicamento(nombre);
+        if (opt.isPresent()) {
+            medicamentos.remove(opt.get());
+            System.out.println("Medicamento eliminado: " + nombre);
+            return true;
+        }
+        System.out.println("No se encontró el medicamento: " + nombre);
+        return false;
+    }
+
+    /**
+     * Elimina un cliente por DNI si existe.
+     */
+    public boolean eliminarCliente(int dni) {
+        Persona persona = personas.get(dni);
+        if (persona instanceof Cliente) {
+            personas.remove(dni);
+            clientesConCompras.remove(persona);
+            System.out.println("Cliente eliminado: " + persona.getNombre() + " " + persona.getApellido());
+            return true;
+        }
+        System.out.println("No se encontró el cliente con DNI: " + dni);
+        return false;
+    }
+
+    /**
      * Filtra medicamentos disponibles y retorna una nueva lista (Streams + Collectors).
      */
     public List<Medicamento> mostrarDisponibles() {
