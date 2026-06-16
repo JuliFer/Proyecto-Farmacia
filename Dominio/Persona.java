@@ -2,6 +2,9 @@ package Dominio;
 
 import java.io.Serializable;
 
+//Implementamos dos interfaces 
+//Comparable - Se comparan con otras personas con Collection.sort
+//Serializable - Interfaz vacia
 public abstract class Persona  implements Comparable <Persona>, Serializable{
 
     protected String nombre;
@@ -9,19 +12,23 @@ public abstract class Persona  implements Comparable <Persona>, Serializable{
     protected int dni;
 
 
+
+    //Constructor
     public Persona(String nombre, String apellido, int dni) {
         this.nombre = nombre;
         this.apellido = apellido;
         this.dni = dni;
     }
 
+    //Utilizamos nuestra interfaz Comparable
+    //Ordena por apellido
     @Override
     public int compareTo(Persona o) {
         return this.apellido.compareTo(o.apellido);
     }
 
 
-
+    //Define que dos personas son la misma si tienen el mismo DNI
     @Override
     public boolean equals(Object obj) {
         if (this == obj)
@@ -40,6 +47,9 @@ public abstract class Persona  implements Comparable <Persona>, Serializable{
         return dni;
     }
 
+
+    //Metodo abstracto
+    //Todas las subclases de personas tienen que mostrar este metodo.
     public abstract void mostrarInfo();
 
     @Override

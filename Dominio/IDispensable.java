@@ -7,6 +7,8 @@ import Excepcion.MedicamentoNoDisponible;
 
 public interface IDispensable {
 
+
+    
     void dispensar() throws MedicamentoNoDisponible;
     void reponer(int cantidad);
 
