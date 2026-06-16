@@ -3,16 +3,9 @@ package ui;
 import java.util.List;
 import java.util.Scanner;
 
-import Dominio.Cliente;
-import Dominio.Farmacia;
-import Dominio.Farmaceutico;
-import Dominio.Medicamento;
-import Dominio.Generico;
-import Dominio.DeMarca;
-import Dominio.Controlado;
-import Excepcion.MedicamentoNoDisponible;
-import Repositorio.IRepositorio;
-import Repositorio.RepositorioArchivo;
+import Dominio.*;
+import Excepcion.*;
+import Repositorio.*;
 
 public class menu {
     private Scanner scanner;
@@ -24,10 +17,20 @@ public class menu {
 
         // Persistencia: cargar datos si existen
         IRepositorio<Cliente> repositorioClientes = new RepositorioArchivo<>("clientes.dat");
-        farmacia.setPersonas((List) repositorioClientes.consultar());
+        List<Cliente> clientesGuardados = repositorioClientes.consultar();
+        if (clientesGuardados != null) {
+            for (Cliente c : clientesGuardados) {
+                farmacia.registrarPersona(c);
+            }
+        }
 
         IRepositorio<Medicamento> repositorioMedicamentos = new RepositorioArchivo<>("medicamentos.dat");
-        farmacia.setMedicamentos((List) repositorioMedicamentos.consultar());
+        List<Medicamento> medsGuardados = repositorioMedicamentos.consultar();
+        if (medsGuardados != null) {
+            for (Medicamento m : medsGuardados) {
+                farmacia.agregarMedicamento(m);
+            }
+        }
 
         int opcion = -1;
 
@@ -53,22 +56,46 @@ public class menu {
             scanner.nextLine();
 
             switch (opcion) {
-                case 1 -> agregarMedicamento();
-                case 2 -> registrarCliente();
-                case 3 -> venderMedicamento();
-                case 4 -> reponerStock();
-                case 5 -> mostrarDisponibles();
-                case 6 -> alertaStock();
-                case 7 -> mostrarTotalGastado();
-                case 0 -> System.out.println("Saliendo del sistema...");
-                default -> System.out.println("Opción inválida");
+                case 1:
+                    agregarMedicamento();
+                    break;
+                case 2:
+                    registrarCliente();
+                    break;
+                case 3:
+                    venderMedicamento();
+                    break;
+                case 4:
+                    reponerStock();
+                    break;
+                case 5:
+                    mostrarDisponibles();
+                    break;
+                case 6:
+                    alertaStock();
+                    break;
+                case 7:
+                    mostrarTotalGastado();
+                    break;
+                case 0:
+                    System.out.println("Saliendo del sistema...");
+                    break;
+                default:
+                    System.out.println("Opción inválida");
+                    break;
             }
 
         } while (opcion != 0);
 
-        // Guardar datos al salir
-        repositorioMedicamentos.guardar(farmacia.getMedicamentos());
-        repositorioClientes.guardar(farmacia.getPersonas());
+        // Guardar datos al salir (guardar elemento por elemento)
+        for (Medicamento med : farmacia.getMedicamentos()) {
+            repositorioMedicamentos.guardar(med);
+        }
+        for (Persona p : farmacia.getPersonas().values()) {
+            if (p instanceof Cliente) {
+                repositorioClientes.guardar((Cliente) p);
+            }
+        }
         scanner.close();
     }
 
@@ -91,25 +118,30 @@ public class menu {
 
         Medicamento m = null;
         switch (tipo) {
-            case 1 -> {
+            case 1: {
                 System.out.print("Principio activo: ");
                 String principio = scanner.nextLine();
-                m = new Generico(1, nombre, precio, stock, receta, principio);
+                System.out.print("Laboratorio: ");
+                String laboratorio = scanner.nextLine();
+                m = new Generico(nombre, precio, stock, receta, EEstadoMedicamento.DISPONIBLE, principio, laboratorio);
+                break;
             }
-            case 2 -> {
+            case 2: {
                 System.out.print("Laboratorio: ");
                 String lab = scanner.nextLine();
                 System.out.print("¿Patente vigente? (true/false): ");
                 boolean patente = scanner.nextBoolean();
-                m = new DeMarca(2, nombre, precio, stock, receta, lab, patente);
+                m = new DeMarca(nombre, precio, stock, receta, EEstadoMedicamento.DISPONIBLE, lab, patente);
+                break;
             }
-            case 3 -> {
+            case 3: {
                 System.out.print("Nivel de control: ");
                 int nivel = scanner.nextInt();
                 scanner.nextLine();
                 System.out.print("Autoridad: ");
                 String autoridad = scanner.nextLine();
-                m = new Controlado(3, nombre, precio, stock, receta, nivel, autoridad);
+                m = new Controlado(nombre, precio, stock, receta, EEstadoMedicamento.DISPONIBLE, nivel, autoridad);
+                break;
             }
         }
         if (m != null) {
@@ -129,7 +161,8 @@ public class menu {
         System.out.print("¿Tiene obra social? (true/false): ");
         boolean obraSocial = scanner.nextBoolean();
 
-        Cliente c = new Cliente(dni, nombre, apellido, obraSocial);
+        Cliente c = new Cliente(nombre, apellido, dni);
+        c.setTieneSocialBoolean(obraSocial);
         farmacia.registrarPersona(c);
         System.out.println("Cliente registrado correctamente.");
     }
@@ -145,18 +178,19 @@ public class menu {
         }
 
         System.out.print("Nombre del medicamento: ");
-        String nombre = scanner.nextLine();
-        Medicamento m = farmacia.buscarMedicamento(nombre);
-        if (m == null) {
+        String nombreMed = scanner.nextLine();
+        java.util.Optional<Medicamento> optM = farmacia.buscarMedicamento(nombreMed);
+        if (optM.isEmpty()) {
             System.out.println("Medicamento no encontrado.");
             return;
         }
+        Medicamento m = optM.get();
 
         try {
             m.dispensar();
             c.comprarMedicamento(m);
             System.out.println("Venta realizada con éxito.");
-        } catch (MedicamentoNoDisponibleException e) {
+        } catch (MedicamentoNoDisponible e) {
             System.out.println("Error: " + e.getMessage());
         }
     }
@@ -164,11 +198,12 @@ public class menu {
     private void reponerStock() {
         System.out.print("Nombre del medicamento: ");
         String nombre = scanner.nextLine();
-        Medicamento m = farmacia.buscarMedicamento(nombre);
-        if (m == null) {
+        java.util.Optional<Medicamento> opt = farmacia.buscarMedicamento(nombre);
+        if (opt.isEmpty()) {
             System.out.println("Medicamento no encontrado.");
             return;
         }
+        Medicamento m = opt.get();
         System.out.print("Cantidad a reponer: ");
         int cantidad = scanner.nextInt();
         m.reponer(cantidad);

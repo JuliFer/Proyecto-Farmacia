@@ -1,3 +1,5 @@
+package Repositorio;
+
 import java.util.List;
 
 public interface IRepositorio<T> {

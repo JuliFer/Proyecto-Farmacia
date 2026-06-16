@@ -1,13 +1,15 @@
 
+package Repositorio;
+
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
-import Dominio.IGenerica;
+import Repositorio.IRepositorio;
 
 //Clase genérica para persistencia en archivo
 //Usa serialización para guardar y leer listas de objetos
-public class RepositorioArchivo<T> implements IGenerica<T> {
+public class RepositorioArchivo<T> implements IRepositorio<T> {
 
     private File archivo;
 
