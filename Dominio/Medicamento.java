@@ -1,8 +1,7 @@
 package Dominio;
 
-import java.io.Serializable;
-
 import Excepcion.MedicamentoNoDisponible;
+import java.io.Serializable;
 
 //Clase abstracta
 public abstract class Medicamento implements IDispensable, Serializable{
