@@ -1,6 +1,4 @@
-import Dominio.*;
-import Excepcion.*;
-import Repositorio.*;
+
 import ui.*;
 
 public class Main {
